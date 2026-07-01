@@ -1443,6 +1443,9 @@ function Footer() {
             <p className="mt-4 max-w-xs text-sm text-muted-foreground">
               Premium web development agency building websites that grow businesses.
             </p>
+            <div className="mt-5">
+              <BookCallButton>Book a Free Call</BookCallButton>
+            </div>
           </div>
           <div>
             <div className="mb-3 text-xs uppercase tracking-widest text-muted-foreground">Navigation</div>
