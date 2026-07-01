@@ -351,8 +351,8 @@ function Hero() {
             </p>
 
             <div className="mt-9 flex flex-wrap items-center gap-3">
-              <Btn href="#book">Get a Free Quote</Btn>
-              <Btn href="#book" variant="ghost">Book a Discovery Call</Btn>
+              <BookCallButton>Book a Free Call</BookCallButton>
+              <Btn href="#services" variant="ghost">Explore Services</Btn>
             </div>
 
             <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-muted-foreground">
