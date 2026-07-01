@@ -85,7 +85,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content:
           "NEXORA is a premium web development agency crafting high-performance websites that build trust, generate leads, and grow businesses worldwide.",
       },
-      { property: "og:title", content: "NEXORA — Websites That Grow Businesses" },
+      { property: "og:title", content: "NEXORA — Websites That Turn Visitors Into Customers" },
       {
         property: "og:description",
         content:
@@ -93,12 +93,20 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "NEXORA — Websites That Grow Businesses" },
+      { name: "twitter:title", content: "NEXORA — Websites That Turn Visitors Into Customers" },
       {
         name: "twitter:description",
         content:
           "Premium web development agency building conversion-focused websites for businesses worldwide.",
       },
+      { name: "description", content: "Websites That Turn
+Visitors Into Customers." },
+      { property: "og:description", content: "Websites That Turn
+Visitors Into Customers." },
+      { name: "twitter:description", content: "Websites That Turn
+Visitors Into Customers." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/IoVX70JB0kSWQMzqEtHlKonzg153/social-images/social-1782880082780-NEXORA.webp" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/IoVX70JB0kSWQMzqEtHlKonzg153/social-images/social-1782880082780-NEXORA.webp" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
