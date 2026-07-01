@@ -731,6 +731,10 @@ function Portfolio() {
             ))}
           </div>
         </div>
+        <div className="reveal mt-14 flex flex-col items-center justify-center gap-3 text-center">
+          <p className="text-sm text-muted-foreground">Want to be our next featured case study?</p>
+          <BookCallButton>Book a Free Call</BookCallButton>
+        </div>
       </div>
     </section>
   );
