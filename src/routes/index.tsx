@@ -1000,6 +1000,9 @@ function BookingSection() {
       cal("ui", {
         theme: "dark",
         cssVarsPerTheme: {
+          light: {
+            "cal-brand": "#3B82F6",
+          },
           dark: {
             "cal-brand": "#3B82F6",
             "cal-bg": "#0b0b12",
