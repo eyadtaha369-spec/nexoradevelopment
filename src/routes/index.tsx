@@ -1512,8 +1512,8 @@ function NexoraLanding() {
         <Pricing />
         <Testimonials />
         <FAQ />
-        <BookForm />
-        <Contact />
+        <BookingSection />
+        <ContactForm />
       </main>
       <Footer />
     </div>
