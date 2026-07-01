@@ -849,15 +849,19 @@ function Pricing() {
                   </li>
                 ))}
               </ul>
-              <a
-                href="#book"
+              <button
+                type="button"
+                data-cal-namespace={CAL_NAMESPACE}
+                data-cal-link={CAL_LINK}
+                data-cal-config='{"layout":"month_view","theme":"dark"}'
                 className={`mt-8 inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-medium transition-all ${
                   t.featured
                     ? "bg-gradient-to-r from-primary to-secondary text-white shadow-glow hover:-translate-y-0.5"
                     : "glass hover:bg-white/[0.06]"
                 }`}
               >
-                {t.cta} <ArrowRight className="h-4 w-4" />
+                Book a Free Call <ArrowRight className="h-4 w-4" />
+              </button>
               </a>
             </div>
           ))}
