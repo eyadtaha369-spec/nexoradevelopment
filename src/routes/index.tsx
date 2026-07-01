@@ -230,12 +230,15 @@ function Nav() {
           </nav>
 
           <div className="flex items-center gap-2">
-            <a
-              href="#book"
+            <button
+              type="button"
+              data-cal-namespace={CAL_NAMESPACE}
+              data-cal-link={CAL_LINK}
+              data-cal-config='{"layout":"month_view","theme":"dark"}'
               className="hidden rounded-full bg-gradient-to-r from-primary to-secondary px-4 py-2 text-sm font-medium text-white shadow-glow transition-transform hover:scale-[1.02] sm:inline-flex"
             >
-              Get a Free Quote
-            </a>
+              Book a Free Call
+            </button>
             <button
               aria-label="Toggle menu"
               onClick={() => setOpen((v) => !v)}
