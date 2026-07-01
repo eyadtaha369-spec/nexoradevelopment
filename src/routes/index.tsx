@@ -956,184 +956,440 @@ function FAQ() {
   );
 }
 
-function BookForm() {
-  const [sent, setSent] = useState(false);
-  function onSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setSent(true);
-    setTimeout(() => setSent(false), 5000);
-    e.currentTarget.reset();
-  }
-  const Input = ({
-    label,
-    name,
-    type = "text",
-    required = true,
-    placeholder,
-  }: {
-    label: string;
-    name: string;
-    type?: string;
-    required?: boolean;
-    placeholder?: string;
-  }) => (
-    <label className="block">
-      <span className="mb-1.5 block text-xs uppercase tracking-widest text-muted-foreground">{label}</span>
-      <input
-        name={name}
-        type={type}
-        required={required}
-        placeholder={placeholder}
-        className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 outline-none transition-colors focus:border-primary/60 focus:bg-white/[0.05] focus:ring-2 focus:ring-primary/30"
-      />
-    </label>
+/* ---------- Cal.com Booking ---------- */
+
+function BookCallButton({
+  children = "Book a Free Call",
+  variant = "primary",
+  className = "",
+}: {
+  children?: ReactNode;
+  variant?: "primary" | "ghost";
+  className?: string;
+}) {
+  const base =
+    "group relative inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-medium transition-all duration-300 cursor-pointer";
+  const styles =
+    variant === "primary"
+      ? "bg-gradient-to-r from-primary via-primary to-secondary text-white shadow-glow hover:shadow-[0_0_50px_-8px_oklch(0.65_0.19_255/0.7)] hover:-translate-y-0.5"
+      : "glass text-foreground hover:border-white/20 hover:bg-white/[0.06]";
+  return (
+    <button
+      type="button"
+      data-cal-namespace={CAL_NAMESPACE}
+      data-cal-link={CAL_LINK}
+      data-cal-config='{"layout":"month_view","theme":"dark"}'
+      className={`${base} ${styles} ${className}`}
+    >
+      <span className="relative z-10 flex items-center gap-2">
+        {children}
+        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+      </span>
+    </button>
   );
+}
+
+function BookingSection() {
+  const [booked, setBooked] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const cal = await getCalApi({ namespace: CAL_NAMESPACE });
+      if (cancelled) return;
+      cal("ui", {
+        theme: "dark",
+        cssVarsPerTheme: {
+          dark: {
+            "cal-brand": "#3B82F6",
+            "cal-bg": "#0b0b12",
+            "cal-bg-emphasis": "#111827",
+            "cal-text": "#ffffff",
+            "cal-text-emphasis": "#ffffff",
+            "cal-border": "rgba(255,255,255,0.08)",
+            "cal-border-subtle": "rgba(255,255,255,0.06)",
+          },
+        },
+        hideEventTypeDetails: false,
+      });
+      cal("on", {
+        action: "bookingSuccessful",
+        callback: () => {
+          setBooked(true);
+          const el = document.getElementById("booking-success");
+          if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+        },
+      });
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const trustItems = [
+    "Free Consultation",
+    "No Commitment",
+    "30-Minute Strategy Call",
+    "Google Meet Meeting",
+    "Personalized Website Recommendations",
+  ];
+
+  const agenda: [string, ComponentType<{ className?: string }>][] = [
+    ["Understand your business", Users],
+    ["Discuss your goals", LineChart],
+    ["Recommend the best website solution", Sparkles],
+    ["Provide a clear project roadmap", Layers],
+    ["Answer all your questions", PhoneCall],
+  ];
 
   return (
     <section id="book" className="relative py-24">
-      <div className="mx-auto max-w-6xl px-4">
-        <div className="reveal overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.05] to-white/[0.01] p-6 sm:p-10">
-          <div className="grid gap-10 lg:grid-cols-[1fr_1.2fr]">
-            <div>
-              <span className="glass inline-flex rounded-full px-3 py-1 text-xs uppercase tracking-widest text-muted-foreground">
-                Book a Call
-              </span>
-              <h2 className="mt-4 font-display text-4xl font-semibold sm:text-5xl">
-                Let's build something <span className="text-gradient-brand">unforgettable</span>.
-              </h2>
-              <p className="mt-4 text-muted-foreground">
-                Tell us about your business. Within 24 hours, we'll send a tailored plan, timeline, and quote — free.
-              </p>
-              <div className="mt-8 space-y-3 text-sm">
-                <div className="flex items-center gap-3">
-                  <Check className="h-4 w-4 text-success" /> Free discovery call
-                </div>
-                <div className="flex items-center gap-3">
-                  <Check className="h-4 w-4 text-success" /> Response within 24 hours
-                </div>
-                <div className="flex items-center gap-3">
-                  <Check className="h-4 w-4 text-success" /> No obligation, ever
-                </div>
+      <div className="mx-auto max-w-7xl px-4">
+        <div className="reveal mx-auto max-w-3xl text-center">
+          <span className="glass inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs uppercase tracking-widest text-muted-foreground">
+            <Calendar className="h-3.5 w-3.5 text-primary" /> Book A Free Discovery Call
+          </span>
+          <h2 className="mt-4 font-display text-4xl font-semibold tracking-tight sm:text-5xl">
+            Book Your Free <span className="text-gradient-brand">Website Strategy Call</span>
+          </h2>
+          <p className="mt-4 text-muted-foreground sm:text-lg">
+            Let's discuss your business, your goals, and how NEXORA can build a premium website that helps your business grow faster.
+          </p>
+        </div>
+
+        {/* Trust indicators */}
+        <div className="reveal mt-8 flex flex-wrap items-center justify-center gap-2.5">
+          {trustItems.map((t) => (
+            <span
+              key={t}
+              className="glass inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs text-foreground/90"
+            >
+              <Check className="h-3.5 w-3.5 text-success" />
+              {t}
+            </span>
+          ))}
+        </div>
+
+        <div className="reveal mt-10 grid gap-6 lg:grid-cols-[1fr_1.7fr]">
+          {/* Agenda card */}
+          <div className="glass-strong flex flex-col rounded-3xl p-8 shadow-elegant">
+            <div className="flex items-center gap-3">
+              <div className="grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br from-primary/30 to-secondary/30 ring-1 ring-white/10">
+                <Video className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <div className="text-xs uppercase tracking-widest text-muted-foreground">What to Expect</div>
+                <h3 className="font-display text-xl font-semibold">Inside the 30-min call</h3>
               </div>
             </div>
-
-            <form onSubmit={onSubmit} className="grid gap-4 sm:grid-cols-2">
-              <Input label="Full Name" name="name" placeholder="Jane Doe" />
-              <Input label="Business Name" name="business" placeholder="Acme Inc." />
-              <Input label="Email" name="email" type="email" placeholder="you@company.com" />
-              <Input label="Phone Number" name="phone" type="tel" placeholder="+1 555 000 0000" />
-              <Input label="Country" name="country" placeholder="United States" />
-              <label className="block">
-                <span className="mb-1.5 block text-xs uppercase tracking-widest text-muted-foreground">Project Type</span>
-                <select
-                  name="projectType"
-                  required
-                  className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/30"
-                >
-                  <option value="">Select...</option>
-                  <option>Business Website</option>
-                  <option>Landing Page</option>
-                  <option>E-commerce</option>
-                  <option>Custom Web App</option>
-                  <option>Redesign</option>
-                  <option>Other</option>
-                </select>
-              </label>
-              <label className="block">
-                <span className="mb-1.5 block text-xs uppercase tracking-widest text-muted-foreground">Estimated Budget</span>
-                <select
-                  name="budget"
-                  required
-                  className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/30"
-                >
-                  <option value="">Select...</option>
-                  <option>Under $2k</option>
-                  <option>$2k – $5k</option>
-                  <option>$5k – $10k</option>
-                  <option>$10k – $25k</option>
-                  <option>$25k+</option>
-                </select>
-              </label>
-              <label className="block">
-                <span className="mb-1.5 block text-xs uppercase tracking-widest text-muted-foreground">Timeline</span>
-                <select
-                  name="timeline"
-                  required
-                  className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/30"
-                >
-                  <option value="">Select...</option>
-                  <option>ASAP</option>
-                  <option>1–3 months</option>
-                  <option>3–6 months</option>
-                  <option>Just exploring</option>
-                </select>
-              </label>
-              <Input label="Preferred Meeting Date" name="date" type="date" />
-              <Input label="Preferred Meeting Time" name="time" type="time" />
-              <label className="block sm:col-span-2">
-                <span className="mb-1.5 block text-xs uppercase tracking-widest text-muted-foreground">Project Description</span>
-                <textarea
-                  name="description"
-                  required
-                  rows={4}
-                  placeholder="Tell us about your business, goals, and what you'd like to build..."
-                  className="w-full resize-none rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/30"
-                />
-              </label>
-              <div className="sm:col-span-2">
-                <button
-                  type="submit"
-                  className="group inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-primary via-primary to-secondary px-6 py-3.5 text-sm font-semibold text-white shadow-glow transition-all hover:-translate-y-0.5"
-                >
-                  Book My Free Consultation
-                  <Send className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                </button>
-                {sent && (
-                  <p className="mt-3 text-center text-sm text-success">
-                    Thanks — we'll reach out within 24 hours.
-                  </p>
-                )}
+            <ul className="mt-6 space-y-3.5">
+              {agenda.map(([t, Icon]) => (
+                <li key={t} className="flex items-start gap-3">
+                  <div className="mt-0.5 grid h-7 w-7 flex-none place-items-center rounded-lg bg-white/[0.04] ring-1 ring-white/10">
+                    <Icon className="h-3.5 w-3.5 text-primary" />
+                  </div>
+                  <span className="text-sm text-foreground/90">{t}</span>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-auto pt-8">
+              <div className="glass flex items-center gap-3 rounded-2xl p-4">
+                <Clock className="h-4 w-4 text-primary" />
+                <div className="text-xs text-muted-foreground">
+                  Prefer a popup? <br />
+                  <span className="text-foreground/90">Open the booking window anywhere on the page.</span>
+                </div>
               </div>
-            </form>
+              <BookCallButton className="mt-4 w-full">Open Booking Popup</BookCallButton>
+            </div>
+          </div>
+
+          {/* Inline Cal embed */}
+          <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.04] to-transparent p-2 shadow-elegant sm:p-3">
+            <div className="pointer-events-none absolute -inset-1 rounded-3xl bg-[radial-gradient(60%_60%_at_50%_0%,oklch(0.65_0.19_255/0.18),transparent_70%)]" />
+            <div className="relative h-[720px] w-full overflow-hidden rounded-2xl ring-1 ring-white/10">
+              <Cal
+                namespace={CAL_NAMESPACE}
+                calLink={CAL_LINK}
+                style={{ width: "100%", height: "100%", overflow: "auto" }}
+                config={{ layout: "month_view", theme: "dark" }}
+              />
+            </div>
           </div>
         </div>
+
+        {/* Success confirmation */}
+        {booked && (
+          <div
+            id="booking-success"
+            className="reveal is-visible mt-10 overflow-hidden rounded-3xl border border-success/30 bg-gradient-to-br from-success/15 via-primary/5 to-transparent p-8 text-center animate-reveal"
+          >
+            <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-success/20 ring-1 ring-success/40 animate-pulse-glow">
+              <CheckCircle2 className="h-8 w-8 text-success" />
+            </div>
+            <h3 className="mt-5 font-display text-2xl font-semibold sm:text-3xl">
+              Your call is booked — talk soon!
+            </h3>
+            <p className="mt-3 text-muted-foreground">
+              A confirmation with your Google Meet link is on its way to your inbox. Please check your email (and spam folder just in case).
+            </p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              We'll come prepared with tailored recommendations for your business.
+            </p>
+          </div>
+        )}
       </div>
     </section>
   );
 }
 
-function Contact() {
-  const items = [
-    {
-      label: "Email",
-      value: "nexoraweb220@gmail.com",
-      href: "mailto:nexoraweb220@gmail.com",
-      Icon: Mail,
-    },
-    {
-      label: "Instagram",
-      value: "@_nexora_00",
-      href: "https://www.instagram.com/_nexora_00",
-      Icon: Instagram,
-    },
-    {
-      label: "TikTok",
-      value: "@nexora_._",
-      href: "https://www.tiktok.com/@nexora_._",
-      // No TikTok icon in lucide, use MapPin swap → keep MapPin? use a custom svg
-      Icon: MapPin,
-    },
-  ];
+/* ---------- Contact Form (Supabase) ---------- */
+
+type ContactStatus = "idle" | "loading" | "success" | "error";
+
+function ContactForm() {
+  const [status, setStatus] = useState<ContactStatus>("idle");
+  const [errorMsg, setErrorMsg] = useState<string>("");
+
+  async function onSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (status === "loading") return;
+    const form = e.currentTarget;
+    const fd = new FormData(form);
+
+    // Honeypot spam protection
+    if ((fd.get("website") as string)?.trim()) {
+      setStatus("success");
+      form.reset();
+      return;
+    }
+
+    const full_name = String(fd.get("full_name") ?? "").trim();
+    const company_name = String(fd.get("company_name") ?? "").trim() || null;
+    const email = String(fd.get("email") ?? "").trim();
+    const phone = String(fd.get("phone") ?? "").trim() || null;
+    const business_type = String(fd.get("business_type") ?? "").trim() || null;
+    const project_type = String(fd.get("project_type") ?? "").trim() || null;
+    const estimated_budget = String(fd.get("estimated_budget") ?? "").trim() || null;
+    const project_description = String(fd.get("project_description") ?? "").trim();
+
+    // Validation
+    if (full_name.length < 2) return setValidationError("Please enter your full name.");
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return setValidationError("Please enter a valid email address.");
+    if (project_description.length < 10)
+      return setValidationError("Please describe your project (at least 10 characters).");
+    if (project_description.length > 5000)
+      return setValidationError("Project description is too long (max 5000 characters).");
+
+    function setValidationError(msg: string) {
+      setErrorMsg(msg);
+      setStatus("error");
+      toast.error(msg);
+    }
+
+    setStatus("loading");
+    setErrorMsg("");
+
+    const { error } = await supabase.from("contact_submissions").insert({
+      full_name,
+      company_name,
+      email,
+      phone,
+      business_type,
+      project_type,
+      estimated_budget,
+      project_description,
+    });
+
+    if (error) {
+      setStatus("error");
+      setErrorMsg("Something went wrong. Please try again or email us directly.");
+      toast.error("Couldn't send your message. Please try again.");
+      return;
+    }
+
+    setStatus("success");
+    toast.success("Message sent — we'll be in touch within 24 hours.");
+    form.reset();
+  }
+
+  const fieldClass =
+    "w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 outline-none transition-colors focus:border-primary/60 focus:bg-white/[0.05] focus:ring-2 focus:ring-primary/30";
+  const labelClass = "mb-1.5 block text-xs uppercase tracking-widest text-muted-foreground";
+
   return (
     <section id="contact" className="relative py-24">
       <div className="mx-auto max-w-6xl px-4">
         <SectionHeading
-          eyebrow="Contact"
-          title={<>Let's <span className="text-gradient-brand">talk</span>.</>}
-          desc="Prefer to reach out directly? We're one message away."
+          eyebrow="Not ready to book?"
+          title={
+            <>
+              Send us a <span className="text-gradient-brand">message</span>.
+            </>
+          }
+          desc="Prefer to write it out? Tell us about your project and we'll get back within 24 hours."
         />
-        <div className="reveal mt-12 grid gap-4 sm:grid-cols-3">
-          {items.map(({ label, value, href, Icon }) => (
+
+        <div className="reveal mt-12 overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.05] to-white/[0.01] p-6 sm:p-10">
+          {status === "success" ? (
+            <div className="mx-auto max-w-xl py-8 text-center">
+              <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-success/20 ring-1 ring-success/40 animate-pulse-glow">
+                <CheckCircle2 className="h-8 w-8 text-success" />
+              </div>
+              <h3 className="mt-5 font-display text-2xl font-semibold sm:text-3xl">Message received — thank you!</h3>
+              <p className="mt-3 text-muted-foreground">
+                We've received your details and will reply to your email within 24 hours with next steps.
+              </p>
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+                <BookCallButton>Book a Free Call Instead</BookCallButton>
+                <button
+                  type="button"
+                  onClick={() => setStatus("idle")}
+                  className="glass rounded-full px-5 py-3 text-sm text-foreground/90 hover:bg-white/[0.06]"
+                >
+                  Send another message
+                </button>
+              </div>
+            </div>
+          ) : (
+            <form onSubmit={onSubmit} noValidate className="grid gap-4 sm:grid-cols-2">
+              {/* Honeypot */}
+              <input
+                type="text"
+                name="website"
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                className="hidden"
+              />
+
+              <label className="block">
+                <span className={labelClass}>Full Name</span>
+                <input name="full_name" required maxLength={120} placeholder="Jane Doe" className={fieldClass} />
+              </label>
+              <label className="block">
+                <span className={labelClass}>Company Name</span>
+                <input name="company_name" maxLength={120} placeholder="Acme Inc." className={fieldClass} />
+              </label>
+              <label className="block">
+                <span className={labelClass}>Email Address</span>
+                <input
+                  name="email"
+                  type="email"
+                  required
+                  maxLength={255}
+                  placeholder="you@company.com"
+                  className={fieldClass}
+                />
+              </label>
+              <label className="block">
+                <span className={labelClass}>Phone Number</span>
+                <input
+                  name="phone"
+                  type="tel"
+                  maxLength={40}
+                  placeholder="+1 555 000 0000"
+                  className={fieldClass}
+                />
+              </label>
+              <label className="block">
+                <span className={labelClass}>Business Type</span>
+                <select name="business_type" required defaultValue="" className={fieldClass}>
+                  <option value="" disabled>
+                    Select...
+                  </option>
+                  <option>Startup</option>
+                  <option>Small Business</option>
+                  <option>Enterprise</option>
+                  <option>Agency</option>
+                  <option>E-commerce</option>
+                  <option>Restaurant / Hospitality</option>
+                  <option>Healthcare</option>
+                  <option>Real Estate</option>
+                  <option>Professional Services</option>
+                  <option>Personal Brand</option>
+                  <option>Other</option>
+                </select>
+              </label>
+              <label className="block">
+                <span className={labelClass}>Project Type</span>
+                <select name="project_type" required defaultValue="" className={fieldClass}>
+                  <option value="" disabled>
+                    Select...
+                  </option>
+                  <option>Business Website</option>
+                  <option>Landing Page</option>
+                  <option>E-commerce Store</option>
+                  <option>Custom Web App</option>
+                  <option>Website Redesign</option>
+                  <option>SEO Optimization</option>
+                  <option>Website Maintenance</option>
+                  <option>Other</option>
+                </select>
+              </label>
+              <label className="block sm:col-span-2">
+                <span className={labelClass}>Estimated Budget</span>
+                <select name="estimated_budget" required defaultValue="" className={fieldClass}>
+                  <option value="" disabled>
+                    Select...
+                  </option>
+                  <option>Under $2k</option>
+                  <option>$2k – $5k</option>
+                  <option>$5k – $10k</option>
+                  <option>$10k – $25k</option>
+                  <option>$25k+</option>
+                  <option>Not sure yet</option>
+                </select>
+              </label>
+              <label className="block sm:col-span-2">
+                <span className={labelClass}>Project Description</span>
+                <textarea
+                  name="project_description"
+                  required
+                  rows={5}
+                  minLength={10}
+                  maxLength={5000}
+                  placeholder="Tell us about your business, goals, and what you'd like to build..."
+                  className={`${fieldClass} resize-none`}
+                />
+              </label>
+
+              <div className="sm:col-span-2">
+                <button
+                  type="submit"
+                  disabled={status === "loading"}
+                  className="group inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-primary via-primary to-secondary px-6 py-3.5 text-sm font-semibold text-white shadow-glow transition-all hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0"
+                >
+                  {status === "loading" ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Sending your message…
+                    </>
+                  ) : (
+                    <>
+                      Send Message
+                      <Send className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                    </>
+                  )}
+                </button>
+                {status === "error" && errorMsg && (
+                  <p className="mt-3 text-center text-sm text-destructive">{errorMsg}</p>
+                )}
+                <p className="mt-3 text-center text-xs text-muted-foreground">
+                  We reply within 24 hours. Your details are stored securely and never shared.
+                </p>
+              </div>
+            </form>
+          )}
+        </div>
+
+        {/* Direct contact links */}
+        <div className="reveal mt-8 grid gap-4 sm:grid-cols-3">
+          {[
+            { label: "Email", value: "nexoraweb220@gmail.com", href: "mailto:nexoraweb220@gmail.com", Icon: Mail },
+            { label: "Instagram", value: "@_nexora_00", href: "https://www.instagram.com/_nexora_00", Icon: Instagram },
+            { label: "TikTok", value: "@nexora_._", href: "https://www.tiktok.com/@nexora_._", Icon: MapPin },
+          ].map(({ label, value, href, Icon }) => (
             <a
               key={label}
               href={href}
