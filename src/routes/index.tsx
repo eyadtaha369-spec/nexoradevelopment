@@ -11,7 +11,9 @@ import {
   ArrowRight,
   ArrowUpRight,
   Check,
+  CheckCircle2,
   ChevronDown,
+  Clock,
   Code2,
   Gauge,
   Globe,
@@ -19,6 +21,7 @@ import {
   Layers,
   Mail,
   Menu,
+  PhoneCall,
   Rocket,
   Search,
   Shield,
@@ -26,6 +29,7 @@ import {
   Smartphone,
   Sparkles,
   Star,
+  Video,
   Zap,
   Palette,
   Wrench,
@@ -47,11 +51,18 @@ import {
   Stethoscope,
   Send,
   MapPin,
+  Loader2,
   X,
 } from "lucide-react";
+import Cal, { getCalApi } from "@calcom/embed-react";
+import { toast } from "sonner";
 
 import nexoraLogoAsset from "@/assets/nexora-logo.asset.json";
 import candorBoostImg from "@/assets/candor-boost.png";
+import { supabase } from "@/integrations/supabase/client";
+
+const CAL_LINK = "nexora-web-ahgcbm/website-consultation";
+const CAL_NAMESPACE = "website-consultation";
 
 export const Route = createFileRoute("/")({
   head: () => ({
