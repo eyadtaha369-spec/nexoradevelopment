@@ -99,12 +99,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content:
           "Premium web development agency building conversion-focused websites for businesses worldwide.",
       },
-      { name: "description", content: "Websites That Turn
-Visitors Into Customers." },
-      { property: "og:description", content: "Websites That Turn
-Visitors Into Customers." },
-      { name: "twitter:description", content: "Websites That Turn
-Visitors Into Customers." },
+      { name: "description", content: "Websites That Turn Visitors Into Customers." },
+      { property: "og:description", content: "Websites That Turn Visitors Into Customers." },
+      { name: "twitter:description", content: "Websites That Turn Visitors Into Customers." },
       { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/IoVX70JB0kSWQMzqEtHlKonzg153/social-images/social-1782880082780-NEXORA.webp" },
       { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/IoVX70JB0kSWQMzqEtHlKonzg153/social-images/social-1782880082780-NEXORA.webp" },
     ],
