@@ -59,10 +59,14 @@ import { toast } from "sonner";
 
 import nexoraLogoAsset from "@/assets/nexora-logo.asset.json";
 import candorBoostImg from "@/assets/candor-boost.png";
-import { supabase } from "@/integrations/supabase/client";
 
 const CAL_LINK = "nexora-web-ahgcbm/website-consultation";
 const CAL_NAMESPACE = "website-consultation";
+
+// Nexora CRM backend (Google Apps Script Web App) — same endpoint used for
+// Cal.com bookings and now also for contact form submissions.
+const CRM_WEBAPP_URL =
+  "https://script.google.com/macros/s/AKfycbyF_gcNQmKtC3ofTNIUt_KSaJVTVO3Db1XhWofvbAmRHcBf5O6LBUGqkv6MF020OIgoVw/exec";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -1160,7 +1164,7 @@ function BookingSection() {
   );
 }
 
-/* ---------- Contact Form (Supabase) ---------- */
+/* ---------- Contact Form (Nexora CRM backend) ---------- */
 
 type ContactStatus = "idle" | "loading" | "success" | "error";
 
@@ -1207,18 +1211,32 @@ function ContactForm() {
     setStatus("loading");
     setErrorMsg("");
 
-    const { error } = await supabase.from("contact_submissions").insert({
-      full_name,
-      company_name,
-      email,
-      phone,
-      business_type,
-      project_type,
-      estimated_budget,
-      project_description,
-    });
+    try {
+      const res = await fetch(CRM_WEBAPP_URL, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "messages.create",
+          payload: {
+            clientName: full_name,
+            companyName: company_name,
+            email,
+            phone,
+            businessType: business_type,
+            projectType: project_type,
+            budget: estimated_budget,
+            description: project_description,
+          },
+        }),
+      });
+      const result = await res.json();
 
-    if (error) {
+      if (!result.ok) {
+        setStatus("error");
+        setErrorMsg("Something went wrong. Please try again or email us directly.");
+        toast.error("Couldn't send your message. Please try again.");
+        return;
+      }
+    } catch (err) {
       setStatus("error");
       setErrorMsg("Something went wrong. Please try again or email us directly.");
       toast.error("Couldn't send your message. Please try again.");
@@ -1539,3 +1557,4 @@ function NexoraLanding() {
     </div>
   );
 }
+
