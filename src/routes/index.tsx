@@ -888,36 +888,213 @@ function Pricing() {
 }
 
 function Testimonials() {
+  const [reviews, setReviews] = useState<
+    { id: string; name: string; business: string; rating: number; quote: string; createdAt: string }[]
+  >([]);
+  const [loadingReviews, setLoadingReviews] = useState(true);
+  const [formOpen, setFormOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [rating, setRating] = useState(5);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch(CRM_WEBAPP_URL, {
+          method: "POST",
+          body: JSON.stringify({ action: "reviews.list", payload: {} }),
+        });
+        const result = await res.json();
+        if (result.ok) setReviews(result.data || []);
+      } catch (err) {
+        // Fail silently — the placeholder cards below still show.
+      } finally {
+        setLoadingReviews(false);
+      }
+    })();
+  }, []);
+
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const fd = new FormData(form);
+
+    // Honeypot spam protection
+    if ((fd.get("website") as string)?.trim()) {
+      form.reset();
+      setFormOpen(false);
+      return;
+    }
+
+    const name = String(fd.get("name") ?? "").trim();
+    const business = String(fd.get("business") ?? "").trim();
+    const quote = String(fd.get("quote") ?? "").trim();
+
+    if (name.length < 2) return toast.error("Please enter your name.");
+    if (quote.length < 10) return toast.error("Please write a bit more about your experience.");
+    if (quote.length > 1000) return toast.error("Review is too long (max 1000 characters).");
+
+    setSubmitting(true);
+    try {
+      const res = await fetch(CRM_WEBAPP_URL, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "reviews.create",
+          payload: { name, business, rating, quote },
+        }),
+      });
+      const result = await res.json();
+      if (!result.ok) {
+        toast.error("Couldn't submit your review. Please try again.");
+        setSubmitting(false);
+        return;
+      }
+      toast.success("Thank you! Your review is now live.");
+      form.reset();
+      setRating(5);
+      setFormOpen(false);
+      setReviews((prev) => [
+        { id: result.data.id, name, business, rating, quote, createdAt: new Date().toISOString() },
+        ...prev,
+      ]);
+    } catch (err) {
+      toast.error("Couldn't submit your review. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  const placeholders = [
+    "Every successful project starts with a conversation.",
+    "Your business could be our next success story.",
+    "Real results. Real feedback. Coming soon.",
+  ];
+
+  const showPlaceholders = !loadingReviews && reviews.length === 0;
+
   return (
     <section className="relative py-24">
       <div className="mx-auto max-w-7xl px-4">
         <SectionHeading
           eyebrow="Client Success Stories"
-          title={<><span className="text-gradient-brand">Coming Soon</span> — and it might be yours.</>}
+          title={
+            reviews.length > 0 ? (
+              <>What our <span className="text-gradient-brand">clients say</span></>
+            ) : (
+              <><span className="text-gradient-brand">Coming Soon</span> — and it might be yours.</>
+            )
+          }
           desc="We believe in earning genuine client feedback through exceptional work."
         />
+
         <div className="reveal mt-14 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {[
-            "Every successful project starts with a conversation.",
-            "Your business could be our next success story.",
-            "Real results. Real feedback. Coming soon.",
-          ].map((quote, i) => (
-            <div key={i} className="glass rounded-2xl p-6">
+          {reviews.map((r) => (
+            <div key={r.id} className="glass rounded-2xl p-6">
               <div className="flex -space-x-1">
                 {[1, 2, 3, 4, 5].map((s) => (
-                  <Star key={s} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                  <Star
+                    key={s}
+                    className={`h-4 w-4 ${s <= r.rating ? "fill-yellow-400 text-yellow-400" : "text-white/20"}`}
+                  />
                 ))}
               </div>
-              <p className="mt-4 text-lg text-foreground/90">"{quote}"</p>
+              <p className="mt-4 text-lg text-foreground/90">"{r.quote}"</p>
               <div className="mt-6 flex items-center gap-3">
-                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary/40 to-secondary/40 ring-1 ring-white/10" />
+                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary/40 to-secondary/40 ring-1 ring-white/10 grid place-items-center text-sm font-semibold">
+                  {r.name.slice(0, 1).toUpperCase()}
+                </div>
                 <div>
-                  <div className="text-sm font-medium">Your Business Here</div>
-                  <div className="text-xs text-muted-foreground">Verified client — coming soon</div>
+                  <div className="text-sm font-medium">{r.name}</div>
+                  <div className="text-xs text-muted-foreground">{r.business || "Verified client"}</div>
                 </div>
               </div>
             </div>
           ))}
+
+          {showPlaceholders &&
+            placeholders.map((quote, i) => (
+              <div key={i} className="glass rounded-2xl p-6">
+                <div className="flex -space-x-1">
+                  {[1, 2, 3, 4, 5].map((s) => (
+                    <Star key={s} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                  ))}
+                </div>
+                <p className="mt-4 text-lg text-foreground/90">"{quote}"</p>
+                <div className="mt-6 flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary/40 to-secondary/40 ring-1 ring-white/10" />
+                  <div>
+                    <div className="text-sm font-medium">Your Business Here</div>
+                    <div className="text-xs text-muted-foreground">Verified client — coming soon</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+        </div>
+
+        <div className="mt-10 flex justify-center">
+          {!formOpen ? (
+            <button
+              onClick={() => setFormOpen(true)}
+              className="inline-flex items-center gap-2 rounded-full glass px-5 py-3 text-sm font-medium hover:bg-white/[0.06] transition-all"
+            >
+              Leave a review <ArrowRight className="h-4 w-4" />
+            </button>
+          ) : (
+            <form onSubmit={handleSubmit} className="glass w-full max-w-xl rounded-2xl p-6 space-y-4">
+              <input type="text" name="website" tabIndex={-1} autoComplete="off" className="hidden" />
+
+              <div className="flex items-center gap-1">
+                {[1, 2, 3, 4, 5].map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => setRating(s)}
+                    aria-label={`${s} star`}
+                  >
+                    <Star className={`h-6 w-6 ${s <= rating ? "fill-yellow-400 text-yellow-400" : "text-white/20"}`} />
+                  </button>
+                ))}
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-3">
+                <input
+                  name="name"
+                  placeholder="Your name *"
+                  required
+                  className="rounded-lg bg-white/5 border border-white/10 px-4 py-2.5 text-sm outline-none focus:border-primary/50"
+                />
+                <input
+                  name="business"
+                  placeholder="Business name (optional)"
+                  className="rounded-lg bg-white/5 border border-white/10 px-4 py-2.5 text-sm outline-none focus:border-primary/50"
+                />
+              </div>
+
+              <textarea
+                name="quote"
+                required
+                rows={4}
+                placeholder="Tell us about your experience working with us…"
+                className="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-2.5 text-sm outline-none focus:border-primary/50 resize-none"
+              />
+
+              <div className="flex items-center gap-3">
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary to-secondary px-5 py-2.5 text-sm font-medium text-white shadow-glow hover:-translate-y-0.5 transition-all disabled:opacity-60"
+                >
+                  {submitting ? "Submitting…" : "Submit review"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormOpen(false)}
+                  className="text-sm text-muted-foreground hover:text-foreground"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          )}
         </div>
       </div>
     </section>
@@ -1559,4 +1736,5 @@ function NexoraLanding() {
     </div>
   );
 }
+
 
