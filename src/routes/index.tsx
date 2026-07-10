@@ -636,6 +636,32 @@ function Process() {
 
 function Portfolio() {
   const upcoming = ["Restaurant", "Real Estate", "Medical Clinic", "Law Firm", "E-commerce", "Travel", "Fitness", "Corporate"];
+  const [projects, setProjects] = useState<
+    { id: string; title: string; category: string; imageUrl: string; description: string; link: string }[]
+  >([]);
+  const [loadingProjects, setLoadingProjects] = useState(true);
+  const [selected, setSelected] = useState<(typeof projects)[number] | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch(CRM_WEBAPP_URL, {
+          method: "POST",
+          body: JSON.stringify({ action: "projects.list", payload: {} }),
+        });
+        const result = await res.json();
+        if (result.ok) setProjects(result.data || []);
+      } catch (err) {
+        // Fail silently — the "coming soon" cards below still show.
+      } finally {
+        setLoadingProjects(false);
+      }
+    })();
+  }, []);
+
+  const remainingSlots = Math.max(0, 8 - projects.length);
+  const upcomingToShow = upcoming.slice(0, remainingSlots);
+
   return (
     <section id="portfolio" className="relative py-24">
       <div className="mx-auto max-w-7xl px-4">
@@ -711,38 +737,114 @@ function Portfolio() {
           </div>
         </div>
 
-        {/* Upcoming */}
-        <div className="reveal mt-16">
-          <div className="mb-6 flex items-end justify-between">
-            <h3 className="font-display text-2xl font-semibold">More Projects Coming Soon</h3>
-            <span className="text-sm text-muted-foreground">Concept slots reserved</span>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {upcoming.map((c) => (
-              <div
-                key={c}
-                className="group relative overflow-hidden rounded-2xl border border-white/[0.06] bg-gradient-to-b from-white/[0.04] to-transparent p-6 transition-transform hover:-translate-y-1"
-              >
-                <div className="aspect-[4/3] rounded-xl bg-[conic-gradient(from_200deg,oklch(0.65_0.19_255_/_0.35),oklch(0.63_0.22_295_/_0.25),oklch(0.78_0.13_210_/_0.25),oklch(0.65_0.19_255_/_0.35))] opacity-70 blur-[1px] transition-opacity group-hover:opacity-100" />
-                <div className="mt-5 flex items-center justify-between">
-                  <div>
-                    <div className="text-xs uppercase tracking-widest text-muted-foreground">{c}</div>
-                    <div className="font-display text-lg font-semibold">Upcoming Project</div>
+        {/* Real client projects */}
+        {!loadingProjects && projects.length > 0 && (
+          <div className="reveal mt-16">
+            <div className="mb-6 flex items-end justify-between">
+              <h3 className="font-display text-2xl font-semibold">More Client Work</h3>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {projects.map((p) => (
+                <button
+                  key={p.id}
+                  onClick={() => setSelected(p)}
+                  className="group relative overflow-hidden rounded-2xl border border-white/[0.06] bg-gradient-to-b from-white/[0.04] to-transparent p-4 text-left transition-transform hover:-translate-y-1"
+                >
+                  <div className="aspect-[4/3] overflow-hidden rounded-xl">
+                    <img src={p.imageUrl} alt={p.title} className="h-full w-full object-cover transition-transform group-hover:scale-105" />
                   </div>
-                  <span className="glass rounded-full px-2.5 py-1 text-[10px] uppercase tracking-widest text-muted-foreground">
-                    Soon
-                  </span>
-                </div>
-              </div>
-            ))}
+                  <div className="mt-4">
+                    <div className="text-xs uppercase tracking-widest text-muted-foreground">{p.category || "Project"}</div>
+                    <div className="font-display text-lg font-semibold">{p.title}</div>
+                  </div>
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
+
+        {/* Upcoming placeholders — fill remaining slots only */}
+        {upcomingToShow.length > 0 && (
+          <div className="reveal mt-16">
+            <div className="mb-6 flex items-end justify-between">
+              <h3 className="font-display text-2xl font-semibold">More Projects Coming Soon</h3>
+              <span className="text-sm text-muted-foreground">Concept slots reserved</span>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {upcomingToShow.map((c) => (
+                <div
+                  key={c}
+                  className="group relative overflow-hidden rounded-2xl border border-white/[0.06] bg-gradient-to-b from-white/[0.04] to-transparent p-6 transition-transform hover:-translate-y-1"
+                >
+                  <div className="aspect-[4/3] rounded-xl bg-[conic-gradient(from_200deg,oklch(0.65_0.19_255_/_0.35),oklch(0.63_0.22_295_/_0.25),oklch(0.78_0.13_210_/_0.25),oklch(0.65_0.19_255_/_0.35))] opacity-70 blur-[1px] transition-opacity group-hover:opacity-100" />
+                  <div className="mt-5 flex items-center justify-between">
+                    <div>
+                      <div className="text-xs uppercase tracking-widest text-muted-foreground">{c}</div>
+                      <div className="font-display text-lg font-semibold">Upcoming Project</div>
+                    </div>
+                    <span className="glass rounded-full px-2.5 py-1 text-[10px] uppercase tracking-widest text-muted-foreground">
+                      Soon
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="reveal mt-14 flex flex-col items-center justify-center gap-3 text-center">
           <p className="text-sm text-muted-foreground">Want to be our next featured case study?</p>
           <BookCallButton>Book a Free Call</BookCallButton>
         </div>
       </div>
+
+      {/* Project detail modal */}
+      {selected && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+          onClick={() => setSelected(null)}
+        >
+          <div
+            className="glass-strong w-full max-w-2xl overflow-hidden rounded-3xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="aspect-[16/10] overflow-hidden">
+              <img src={selected.imageUrl} alt={selected.title} className="h-full w-full object-cover" />
+            </div>
+            <div className="p-6 sm:p-8">
+              <span className="glass inline-flex w-fit rounded-full px-3 py-1 text-xs uppercase tracking-widest text-muted-foreground">
+                {selected.category || "Project"}
+              </span>
+              <h3 className="mt-4 font-display text-2xl font-semibold sm:text-3xl">{selected.title}</h3>
+              {selected.description && (
+                <p className="mt-3 text-muted-foreground">{selected.description}</p>
+              )}
+              <div className="mt-6 flex items-center gap-3">
+                {selected.link && (
+                  <a
+                    href={selected.link}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary to-secondary px-5 py-2.5 text-sm font-medium text-white shadow-glow transition-transform hover:-translate-y-0.5"
+                  >
+                    View Live Website
+                    <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                  </a>
+                )}
+                <button
+                  onClick={() => setSelected(null)}
+                  className="text-sm text-muted-foreground hover:text-foreground"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
+  );
+}
   );
 }
 
