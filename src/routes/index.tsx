@@ -1423,7 +1423,7 @@ function ContactForm() {
         {/* Direct contact links */}
         <div className="reveal mt-8 grid gap-4 sm:grid-cols-3">
           {[
-            { label: "Email", value: "nexoraweb220@gmail.com", href: "mailto:nexoraweb220@gmail.com", Icon: Mail },
+            { label: "Email", value: "nexoraweb220@gmail.com", href: "https://mail.google.com/mail/?view=cm&fs=1&to=nexoraweb220@gmail.com", Icon: Mail },
             { label: "Instagram", value: "@_nexora_00", href: "https://www.instagram.com/_nexora_00", Icon: Instagram },
             { label: "TikTok", value: "@nexora_._", href: "https://www.tiktok.com/@nexora_._", Icon: MapPin },
           ].map(({ label, value, href, Icon }) => (
