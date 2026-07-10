@@ -57,11 +57,13 @@ import {
 import Cal, { getCalApi } from "@calcom/embed-react";
 import { toast } from "sonner";
 
-import nexoraLogoAsset from "@/assets/nexora-logo.asset.json";
 import candorBoostImg from "@/assets/candor-boost.png";
 
 const CAL_LINK = "nexora-web-ahgcbm/website-consultation";
 const CAL_NAMESPACE = "website-consultation";
+
+// Logo is served directly from the /public folder now (see public/nexora-logo.jpeg)
+const NEXORA_LOGO_URL = "/nexora-logo.jpeg";
 
 // Nexora CRM backend (Google Apps Script Web App) — same endpoint used for
 // Cal.com bookings and now also for contact form submissions.
@@ -173,7 +175,7 @@ function LoadingOverlay() {
       }`}
     >
       <div className="flex flex-col items-center gap-4">
-        <img src={nexoraLogoAsset.url} alt="NEXORA" className="h-16 w-auto animate-pulse-glow rounded-full" />
+        <img src={NEXORA_LOGO_URL} alt="NEXORA" className="h-16 w-auto animate-pulse-glow rounded-full" />
         <div className="h-[2px] w-40 overflow-hidden rounded-full bg-white/10">
           <div className="h-full w-1/2 animate-[shimmer_1.2s_linear_infinite] bg-gradient-to-r from-transparent via-primary to-transparent [background-size:200%_100%]" />
         </div>
@@ -217,7 +219,7 @@ function Nav() {
           }`}
         >
           <a href="#home" className="flex items-center gap-2.5">
-            <img src={nexoraLogoAsset.url} alt="NEXORA logo" className="h-9 w-9 rounded-lg object-cover" />
+            <img src={NEXORA_LOGO_URL} alt="NEXORA logo" className="h-9 w-9 rounded-lg object-cover" />
             <span className="font-display text-lg font-semibold tracking-widest">NEXORA</span>
           </a>
 
@@ -1455,7 +1457,7 @@ function Footer() {
         <div className="grid gap-10 md:grid-cols-4">
           <div>
             <div className="flex items-center gap-2.5">
-              <img src={nexoraLogoAsset.url} alt="NEXORA" className="h-9 w-9 rounded-lg object-cover" />
+              <img src={NEXORA_LOGO_URL} alt="NEXORA" className="h-9 w-9 rounded-lg object-cover" />
               <span className="font-display text-lg font-semibold tracking-widest">NEXORA</span>
             </div>
             <p className="mt-4 max-w-xs text-sm text-muted-foreground">
