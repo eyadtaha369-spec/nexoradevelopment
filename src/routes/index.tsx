@@ -845,8 +845,6 @@ function Portfolio() {
     </section>
   );
 }
-  );
-}
 
 function Industries() {
   const items: [string, ComponentType<{ className?: string }>][] = [
