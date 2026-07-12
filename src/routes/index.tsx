@@ -636,7 +636,7 @@ function Process() {
 
 function Portfolio() {
   const upcoming = ["Restaurant", "Real Estate", "Medical Clinic", "Law Firm", "E-commerce", "Travel", "Fitness", "Corporate"];
-  const [projects, setProjects] = useState<
+  const [projects, setProjects] = useState
     { id: string; title: string; category: string; imageUrl: string; description: string; link: string }[]
   >([]);
   const [loadingProjects, setLoadingProjects] = useState(true);
@@ -723,7 +723,7 @@ function Portfolio() {
                 ))}
               </div>
               <div className="mt-7">
-                <a
+                
                   href="https://candor-boost-web.vercel.app/"
                   target="_blank"
                   rel="noreferrer noopener"
@@ -737,60 +737,57 @@ function Portfolio() {
           </div>
         </div>
 
-        {/* Real client projects */}
-        {!loadingProjects && projects.length > 0 && (
-          <div className="reveal mt-16">
-            <div className="mb-6 flex items-end justify-between">
-              <h3 className="font-display text-2xl font-semibold">More Client Work</h3>
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {projects.map((p) => (
-                <button
-                  key={p.id}
-                  onClick={() => setSelected(p)}
-                  className="group relative overflow-hidden rounded-2xl border border-white/[0.06] bg-gradient-to-b from-white/[0.04] to-transparent p-4 text-left transition-transform hover:-translate-y-1"
-                >
-                  <div className="aspect-[4/3] overflow-hidden rounded-xl">
-                    <img src={p.imageUrl} alt={p.title} className="h-full w-full object-cover transition-transform group-hover:scale-105" />
-                  </div>
-                  <div className="mt-4">
-                    <div className="text-xs uppercase tracking-widest text-muted-foreground">{p.category || "Project"}</div>
-                    <div className="font-display text-lg font-semibold">{p.title}</div>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Upcoming placeholders — fill remaining slots only */}
-        {upcomingToShow.length > 0 && (
-          <div className="reveal mt-16">
-            <div className="mb-6 flex items-end justify-between">
-              <h3 className="font-display text-2xl font-semibold">More Projects Coming Soon</h3>
+        {/* More projects — real client work and upcoming concept slots, unified */}
+        <div className="reveal mt-16">
+          <div className="mb-6 flex items-end justify-between">
+            <h3 className="font-display text-2xl font-semibold">More Projects</h3>
+            {upcomingToShow.length > 0 && (
               <span className="text-sm text-muted-foreground">Concept slots reserved</span>
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {upcomingToShow.map((c) => (
-                <div
-                  key={c}
-                  className="group relative overflow-hidden rounded-2xl border border-white/[0.06] bg-gradient-to-b from-white/[0.04] to-transparent p-6 transition-transform hover:-translate-y-1"
-                >
-                  <div className="aspect-[4/3] rounded-xl bg-[conic-gradient(from_200deg,oklch(0.65_0.19_255_/_0.35),oklch(0.63_0.22_295_/_0.25),oklch(0.78_0.13_210_/_0.25),oklch(0.65_0.19_255_/_0.35))] opacity-70 blur-[1px] transition-opacity group-hover:opacity-100" />
-                  <div className="mt-5 flex items-center justify-between">
-                    <div>
-                      <div className="text-xs uppercase tracking-widest text-muted-foreground">{c}</div>
-                      <div className="font-display text-lg font-semibold">Upcoming Project</div>
-                    </div>
-                    <span className="glass rounded-full px-2.5 py-1 text-[10px] uppercase tracking-widest text-muted-foreground">
-                      Soon
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
+            )}
           </div>
-        )}
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {projects.map((p) => (
+              <button
+                key={p.id}
+                onClick={() => setSelected(p)}
+                className="group relative overflow-hidden rounded-2xl border border-white/[0.06] bg-gradient-to-b from-white/[0.04] to-transparent p-4 text-left transition-transform hover:-translate-y-1"
+              >
+                <div className="aspect-[4/3] overflow-hidden rounded-xl bg-[conic-gradient(from_200deg,oklch(0.65_0.19_255_/_0.35),oklch(0.63_0.22_295_/_0.25),oklch(0.78_0.13_210_/_0.25),oklch(0.65_0.19_255_/_0.35))]">
+                  <img
+                    src={p.imageUrl}
+                    alt={p.title}
+                    className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).style.display = "none";
+                    }}
+                  />
+                </div>
+                <div className="mt-4">
+                  <div className="text-xs uppercase tracking-widest text-muted-foreground">{p.category || "Project"}</div>
+                  <div className="font-display text-lg font-semibold">{p.title}</div>
+                </div>
+              </button>
+            ))}
+
+            {upcomingToShow.map((c) => (
+              <div
+                key={c}
+                className="group relative overflow-hidden rounded-2xl border border-white/[0.06] bg-gradient-to-b from-white/[0.04] to-transparent p-6 transition-transform hover:-translate-y-1"
+              >
+                <div className="aspect-[4/3] rounded-xl bg-[conic-gradient(from_200deg,oklch(0.65_0.19_255_/_0.35),oklch(0.63_0.22_295_/_0.25),oklch(0.78_0.13_210_/_0.25),oklch(0.65_0.19_255_/_0.35))] opacity-70 blur-[1px] transition-opacity group-hover:opacity-100" />
+                <div className="mt-5 flex items-center justify-between">
+                  <div>
+                    <div className="text-xs uppercase tracking-widest text-muted-foreground">{c}</div>
+                    <div className="font-display text-lg font-semibold">Upcoming Project</div>
+                  </div>
+                  <span className="glass rounded-full px-2.5 py-1 text-[10px] uppercase tracking-widest text-muted-foreground">
+                    Soon
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
 
         <div className="reveal mt-14 flex flex-col items-center justify-center gap-3 text-center">
           <p className="text-sm text-muted-foreground">Want to be our next featured case study?</p>
@@ -821,7 +818,7 @@ function Portfolio() {
               )}
               <div className="mt-6 flex items-center gap-3">
                 {selected.link && (
-                  <a
+                  
                     href={selected.link}
                     target="_blank"
                     rel="noreferrer noopener"
@@ -845,6 +842,7 @@ function Portfolio() {
     </section>
   );
 }
+ 
 
 function Industries() {
   const items: [string, ComponentType<{ className?: string }>][] = [
