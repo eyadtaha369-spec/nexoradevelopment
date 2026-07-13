@@ -636,9 +636,9 @@ function Process() {
 
 function Portfolio() {
   const upcoming = ["Restaurant", "Real Estate", "Medical Clinic", "Law Firm", "E-commerce", "Travel", "Fitness", "Corporate"];
- const [projects, setProjects] = useState
-  { id: string; title: string; category: string; imageUrl: string; description: string; link: string }[]
->([]);
+  const [projects, setProjects] = useState<
+    { id: string; title: string; category: string; imageUrl: string; description: string; link: string }[]
+  >([]);
   const [loadingProjects, setLoadingProjects] = useState(true);
   const [selected, setSelected] = useState<(typeof projects)[number] | null>(null);
 
@@ -723,9 +723,8 @@ function Portfolio() {
                 ))}
               </div>
               <div className="mt-7">
-
-                
-    href="https://candor-boost-web.vercel.app/"
+                <a
+                  href="https://candor-boost-web.vercel.app/"
                   target="_blank"
                   rel="noreferrer noopener"
                   className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary to-secondary px-6 py-3 text-sm font-medium text-white shadow-glow transition-transform hover:-translate-y-0.5"
@@ -819,9 +818,8 @@ function Portfolio() {
               )}
               <div className="mt-6 flex items-center gap-3">
                 {selected.link && (
-  
-    href={selected.link}
-                  
+                  <a
+                    href={selected.link}
                     target="_blank"
                     rel="noreferrer noopener"
                     className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary to-secondary px-5 py-2.5 text-sm font-medium text-white shadow-glow transition-transform hover:-translate-y-0.5"
@@ -844,7 +842,6 @@ function Portfolio() {
     </section>
   );
 }
- 
 
 function Industries() {
   const items: [string, ComponentType<{ className?: string }>][] = [
@@ -1836,5 +1833,4 @@ function NexoraLanding() {
     </div>
   );
 }
-
 
